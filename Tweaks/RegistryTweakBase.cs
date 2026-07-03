@@ -175,25 +175,4 @@ namespace ZeroBloat.Tweaks
             return TweakCompatibility.Supported;
         }
     }
-
-    /// <summary>
-    /// Placeholder for the DPAPI-secured undo log. Replaced with the real
-    /// encrypted read/write implementation once the undo system is built —
-    /// stubbed here so RegistryTweakBase compiles and is testable now.
-    /// </summary>
-    internal static class UndoLog
-    {
-        public static void RecordPreState(string tweakId, string? value)
-        {
-            // TODO: replace with DPAPI-encrypted write to the transaction manifest.
-            Debug.WriteLine($"[UndoLog] Would record: {tweakId} -> {value ?? "(not set)"}");
-        }
-
-        public static string? GetPreState(string tweakId)
-        {
-            // TODO: replace with DPAPI-encrypted read from the transaction manifest.
-            Debug.WriteLine($"[UndoLog] Would read pre-state for: {tweakId}");
-            return null;
-        }
-    }
 }

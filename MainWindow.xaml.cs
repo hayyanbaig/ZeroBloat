@@ -21,7 +21,6 @@ namespace ZeroBloat
         {
             InitializeComponent();
             var tweak = new ClassicContextMenuTweak();
-
             var preview = tweak.PreviewChange();
             MessageBox.Show($"PREVIEW\n{preview.TargetPath}\n{preview.OldValue} → {preview.NewValue}");
 
@@ -30,9 +29,9 @@ namespace ZeroBloat
 
             var verifyResult = tweak.Verify();
             MessageBox.Show($"VERIFY\n{verifyResult.Message}");
-            
-            var tweak2 = new DisableSysMainTweak();
 
+
+            var tweak2 = new DisableSysMainTweak();
             var preview2 = tweak2.PreviewChange();
             MessageBox.Show($"PREVIEW\n{preview2.TargetPath}\n{preview2.OldValue} → {preview2.NewValue}");
 
@@ -42,11 +41,13 @@ namespace ZeroBloat
             var verifyResult2 = tweak2.Verify();
             MessageBox.Show($"VERIFY\n{verifyResult2.Message}");
 
+
             var revertResult = tweak.Revert();
             MessageBox.Show($"REVERT\n{revertResult.Message}");
 
             var revertResult2 = tweak2.Revert();
             MessageBox.Show($"REVERT\n{revertResult2.Message}");
+
         }
     }
 }
