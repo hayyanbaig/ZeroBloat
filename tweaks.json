@@ -1,0 +1,43 @@
+{
+    "manifestVersion": "1.0.0",
+    "generatedAt": "2026-07-03T00:00:00Z",
+    "tweaks": [
+        {
+            "id": "classic_context_menu",
+            "displayName": "Classic Context Menu",
+            "description": "Restores the traditional Windows 10 style right-click menu, removing the Windows 11 'Show more options' extra step.",
+            "riskTier": "Standard",
+            "type": "registry",
+            "action": "deleteKeyOnRevert",
+            "hive": "CurrentUser",
+            "subKeyPath": "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32",
+            "valueName": "",
+            "valueKind": "String",
+            "enabledValue": "",
+            "defaultValue": null,
+            "compatibility": {
+                "minBuildNumber": 22000,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": "This tweak has no effect on Windows 10 — the classic menu is already the default there."
+            }
+        },
+        {
+            "id": "disable_sysmain",
+            "displayName": "Stop Excessive File Re-Reading (SysMain)",
+            "description": "Disables the SysMain (Superfetch) service, which preloads frequently used app data into RAM and can cause high disk usage on some systems.",
+            "riskTier": "Safe",
+            "type": "service",
+            "action": "stopAndDisable",
+            "serviceName": "SysMain",
+            "startValueDisabled": 4,
+            "startValueDefault": 2,
+            "compatibility": {
+                "minBuildNumber": 0,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": null
+            }
+        }
+    ]
+}
