@@ -147,6 +147,8 @@ namespace ZeroBloat.Tweaks
                 key.SetValue(ValueName, restoreValue, ValueKind);
                 sw.Stop();
 
+                UndoLog.ClearPreState(Id);
+
                 return new TweakResult
                 {
                     Success = true,

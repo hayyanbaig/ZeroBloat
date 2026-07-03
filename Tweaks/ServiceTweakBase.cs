@@ -138,28 +138,58 @@ namespace ZeroBloat.Tweaks
         {
             var sw = Stopwatch.StartNew();
 
+            // Format stored by Apply(): "priorStatusValue;priorStartValue"
+            // e.g. "4;2" means prior ServiceControllerStatus was Running (4),
+            // prior Start registry value was Automatic (2).
+            var storedPreState = UndoLog.GetPreState(Id);
+
+            int restoreStartValue = StartValueDefault;
+            bool shouldBeRunning = true;
+
+            if (storedPreState != null)
+            {
+                var parts = storedPreState.Split(';');
+                if (parts.Length == 2)
+                {
+                    if (int.TryParse(parts[1], out var parsedStart))
+                        restoreStartValue = parsedStart;
+
+                    if (int.TryParse(parts[0], out var parsedStatus))
+                    {
+                        // ServiceControllerStatus: Stopped = 1
+                        shouldBeRunning = parsedStatus != (int)ServiceControllerStatus.Stopped;
+                    }
+                }
+            }
+
             try
             {
                 using (var key = Registry.LocalMachine.OpenSubKey(StartTypeRegistryPath, writable: true))
                 {
-                    key?.SetValue("Start", StartValueDefault, RegistryValueKind.DWord);
+                    key?.SetValue("Start", restoreStartValue, RegistryValueKind.DWord);
                 }
 
-                using (var sc = new ServiceController(ServiceName))
+                if (shouldBeRunning)
                 {
-                    sc.Start();
-                    sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(15));
+                    using var sc = new ServiceController(ServiceName);
+                    if (sc.Status != ServiceControllerStatus.Running)
+                    {
+                        sc.Start();
+                        sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(15));
+                    }
                 }
 
                 sw.Stop();
+                UndoLog.ClearPreState(Id);
 
                 return new TweakResult
                 {
                     Success = true,
                     TargetPath = $@"Service: {ServiceName}",
-                    NewValue = "Status: Running, Start: Automatic",
+                    NewValue = $"Start: {restoreStartValue}, Running: {shouldBeRunning}",
                     Duration = sw.Elapsed,
-                    Message = $"Reverted {DisplayName} — {ServiceName} restarted and set to Automatic."
+                    Message = $"Reverted {DisplayName} — restored recorded pre-state " +
+                              $"({(storedPreState != null ? "from undo log" : "using default, no prior state found")})."
                 };
             }
             catch (Exception ex)
