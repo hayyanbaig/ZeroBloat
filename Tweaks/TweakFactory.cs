@@ -24,7 +24,10 @@ namespace ZeroBloat.Tweaks
     {
         private static readonly Dictionary<string, Func<TweakDefinition, ITweak>> _specialCases = new()
         {
-            ["classic_context_menu"] = _ => new ClassicContextMenuTweak()
+            ["classic_context_menu"] = _ => new ClassicContextMenuTweak(),
+            ["disable_recall"] = _ => new DisableRecallTweak(),
+            ["disable_copilot"] = _ => new DisableCopilotTweak(),
+            ["local_account_delink"] = _ => new LocalAccountDelinkTweak()
         };
 
         public static ITweak Build(TweakDefinition def)

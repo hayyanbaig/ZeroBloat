@@ -129,22 +129,46 @@ namespace ZeroBloat.Tweaks
         public virtual TweakResult Revert()
         {
             var sw = Stopwatch.StartNew();
-            var storedPreState = UndoLog.GetPreState(Id);
-
-            // Fall back to Windows default if no stored pre-state exists
-            // (e.g. tweak was applied before the undo log existed, or the
-            // log was cleared).
-            object restoreValue = storedPreState != null
-                ? storedPreState
-                : DefaultValue;
+            bool hadEntry = UndoLog.TryGetPreState(Id, out var storedPreState);
 
             try
             {
                 using var baseKey = OpenBaseKey();
-                using var key = baseKey.CreateSubKey(SubKeyPath, writable: true)
+
+                // Case 1: we have a recorded entry, and it says the value
+                // genuinely did not exist before this tweak was applied.
+                // Correct behavior is to delete the value, not write
+                // DefaultValue — writing DefaultValue would fabricate a
+                // value that was never really there.
+                if (hadEntry && storedPreState == null)
+                {
+                    using var key = baseKey.OpenSubKey(SubKeyPath, writable: true);
+                    key?.DeleteValue(ValueName, throwOnMissingValue: false);
+                    sw.Stop();
+
+                    UndoLog.ClearPreState(Id);
+
+                    return new TweakResult
+                    {
+                        Success = true,
+                        TargetPath = $@"{Hive}\{SubKeyPath}\{ValueName}",
+                        NewValue = "(not set)",
+                        Duration = sw.Elapsed,
+                        Message = $"Reverted {DisplayName} — removed value (it did not exist before this tweak was applied)."
+                    };
+                }
+
+                // Case 2: we have a recorded, non-null prior value — restore it exactly.
+                // Case 3: no entry was ever recorded (tweak was never applied via this
+                // engine) — best-effort fall back to the hardcoded DefaultValue.
+                object restoreValue = (hadEntry && storedPreState != null)
+                    ? storedPreState
+                    : DefaultValue;
+
+                using var writeKey = baseKey.CreateSubKey(SubKeyPath, writable: true)
                     ?? throw new InvalidOperationException($"Could not open key: {SubKeyPath}");
 
-                key.SetValue(ValueName, restoreValue, ValueKind);
+                writeKey.SetValue(ValueName, restoreValue, ValueKind);
                 sw.Stop();
 
                 UndoLog.ClearPreState(Id);
@@ -155,7 +179,9 @@ namespace ZeroBloat.Tweaks
                     TargetPath = $@"{Hive}\{SubKeyPath}\{ValueName}",
                     NewValue = restoreValue.ToString(),
                     Duration = sw.Elapsed,
-                    Message = $"Reverted {DisplayName}."
+                    Message = hadEntry
+                        ? $"Reverted {DisplayName} using recorded pre-state."
+                        : $"Reverted {DisplayName} using default (no prior state was recorded)."
                 };
             }
             catch (Exception ex)

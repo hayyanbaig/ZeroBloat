@@ -38,6 +38,168 @@
                 "editions": [ "Home", "Pro", "Enterprise", "Education" ],
                 "unsupportedBelow": null
             }
+        },
+        {
+            "id": "disable_copilot",
+            "displayName": "Disable Copilot Entirely",
+            "description": "Removes the Copilot taskbar icon and disables its background service behavior via Group Policy.",
+            "riskTier": "Standard",
+            "type": "multiStrategy",
+            "action": "specialCase",
+            "compatibility": {
+                "minBuildNumber": 22621,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": "Copilot is not present on Windows 10 or early Windows 11 builds."
+            }
+        },
+        {
+            "id": "local_account_delink",
+            "displayName": "Local Account De-Link",
+            "description": "Guides you through switching from a Microsoft account to a local account using Windows' own settings flow.",
+            "riskTier": "Standard",
+            "type": "multiStrategy",
+            "action": "specialCase",
+            "compatibility": {
+                "minBuildNumber": 0,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": null
+            }
+        },
+        {
+            "id": "disable_recall",
+            "displayName": "Nuke Windows Recall / Click to Do",
+            "description": "Disables Windows Recall's background snapshotting and AI data analysis using multiple fallback strategies.",
+            "riskTier": "Standard",
+            "type": "multiStrategy",
+            "action": "specialCase",
+            "compatibility": {
+                "minBuildNumber": 26100,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": "Recall requires a Copilot+ PC and a recent Windows 11 build. Not applicable on Windows 10 or older Windows 11 builds."
+            }
+        },
+        {
+            "id": "kill_telemetry",
+            "displayName": "Kill Telemetry",
+            "description": "Drops Windows diagnostic data collection down to the minimum level allowed (Security/Basic).",
+            "riskTier": "Standard",
+            "type": "registry",
+            "action": "setValue",
+            "hive": "LocalMachine",
+            "subKeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+            "valueName": "AllowTelemetry",
+            "valueKind": "DWord",
+            "enabledValue": 0,
+            "defaultValue": 1,
+            "compatibility": {
+                "minBuildNumber": 0,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": null
+            }
+        },
+        {
+            "id": "stop_activity_tracking",
+            "displayName": "Stop Activity Tracking",
+            "description": "Disables Windows Activity History and Timeline tracking of app and document usage.",
+            "riskTier": "Standard",
+            "type": "registry",
+            "action": "setValue",
+            "hive": "LocalMachine",
+            "subKeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+            "valueName": "EnableActivityFeed",
+            "valueKind": "DWord",
+            "enabledValue": 0,
+            "defaultValue": 1,
+            "compatibility": {
+                "minBuildNumber": 0,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": null
+            }
+        },
+        {
+            "id": "disable_advertising_id",
+            "displayName": "Disable Advertising ID",
+            "description": "Turns off the personalized Advertising ID used to profile app usage for targeted ads.",
+            "riskTier": "Standard",
+            "type": "registry",
+            "action": "setValue",
+            "hive": "LocalMachine",
+            "subKeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+            "valueName": "DisabledByGroupPolicy",
+            "valueKind": "DWord",
+            "enabledValue": 1,
+            "defaultValue": 0,
+            "compatibility": {
+                "minBuildNumber": 0,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": null
+            }
+        },
+        {
+            "id": "disable_location_tracking",
+            "displayName": "Disable Device Location Tracking",
+            "description": "Disables app access to device location services system-wide.",
+            "riskTier": "Standard",
+            "type": "registry",
+            "action": "setValue",
+            "hive": "LocalMachine",
+            "subKeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors",
+            "valueName": "DisableLocation",
+            "valueKind": "DWord",
+            "enabledValue": 1,
+            "defaultValue": 0,
+            "compatibility": {
+                "minBuildNumber": 0,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": null
+            }
+        },
+        {
+            "id": "disable_clipboard_cloud_sync",
+            "displayName": "Stop Cross-Device Clipboard Cloud Sync",
+            "description": "Prevents clipboard history and content from being uploaded and synced across devices via Microsoft account.",
+            "riskTier": "Standard",
+            "type": "registry",
+            "action": "setValue",
+            "hive": "LocalMachine",
+            "subKeyPath": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+            "valueName": "AllowCrossDeviceClipboard",
+            "valueKind": "DWord",
+            "enabledValue": 0,
+            "defaultValue": 1,
+            "compatibility": {
+                "minBuildNumber": 0,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": null
+            }
+        },
+        {
+            "id": "disable_wifi_sense",
+            "displayName": "Disable Wi-Fi Sense",
+            "description": "Turns off Wi-Fi Sense network sharing and auto-connect-to-suggested-hotspots behavior.",
+            "riskTier": "Standard",
+            "type": "registry",
+            "action": "setValue",
+            "hive": "LocalMachine",
+            "subKeyPath": "SOFTWARE\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
+            "valueName": "Value",
+            "valueKind": "DWord",
+            "enabledValue": 0,
+            "defaultValue": 1,
+            "compatibility": {
+                "minBuildNumber": 0,
+                "maxBuildNumber": null,
+                "editions": [ "Home", "Pro", "Enterprise", "Education" ],
+                "unsupportedBelow": null
+            }
         }
     ]
 }

@@ -108,11 +108,38 @@ namespace ZeroBloat.Tweaks
         /// Retrieves the stored pre-change value for a tweak, or null if
         /// none exists (tweak was never applied, or the log was cleared).
         /// Callers should fall back to a hardcoded Windows default in that case.
+        ///
+        /// NOTE: this cannot distinguish "no entry recorded" from "entry
+        /// recorded with a null value" (meaning the registry value simply
+        /// didn't exist before the tweak was applied) — both return null
+        /// here. Callers that need to tell these apart (i.e. registry
+        /// tweaks, where "didn't exist" should mean delete-on-revert, not
+        /// fall back to a default) should use TryGetPreState instead.
         /// </summary>
         public static string? GetPreState(string tweakId)
         {
             var cache = LoadCache();
             return cache.TryGetValue(tweakId, out var entry) ? entry.Value : null;
+        }
+
+        /// <summary>
+        /// Same as GetPreState, but the return bool tells you whether an
+        /// entry was recorded at all, separate from what its value was.
+        /// True + null value means "recorded, and the value genuinely
+        /// didn't exist before" — Revert() should delete, not default.
+        /// False means "never applied, no data" — Revert() should fall
+        /// back to a hardcoded default as a best guess.
+        /// </summary>
+        public static bool TryGetPreState(string tweakId, out string? value)
+        {
+            var cache = LoadCache();
+            if (cache.TryGetValue(tweakId, out var entry))
+            {
+                value = entry.Value;
+                return true;
+            }
+            value = null;
+            return false;
         }
 
         /// <summary>

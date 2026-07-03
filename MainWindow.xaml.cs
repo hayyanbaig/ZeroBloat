@@ -22,19 +22,11 @@ namespace ZeroBloat
         public MainWindow()
         {
             InitializeComponent();
-            var manifest = ManifestLoader.Load();
+            var manifest = ManifestLoader.Load(forceReload: true);
             var tweaks = TweakFactory.BuildAll(manifest);
 
-            var sysMainTweak = tweaks.First(t => t.Id == "disable_sysmain");
-
-            var preview = sysMainTweak.PreviewChange();
-            MessageBox.Show($"BUILT FROM MANIFEST\n{sysMainTweak.DisplayName}\n{preview.OldValue} → {preview.NewValue}");
-
-            var applyResult = sysMainTweak.Apply();
-            MessageBox.Show($"APPLY\n{applyResult.Message}");
-
-            var revertResult = sysMainTweak.Revert();
-            MessageBox.Show($"REVERT\n{revertResult.Message}");
+            MessageBox.Show($"Loaded {tweaks.Count} tweaks:\n" +
+                string.Join("\n", tweaks.Select(t => $"- {t.DisplayName} [{t.CheckCompatibility()}]")));
         }
     }
 }

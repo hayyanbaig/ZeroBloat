@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using System.Text.Json;
+using Microsoft.Win32;
 using ZeroBloat.Services.Manifest;
 using ZeroBloat.Services;
 
@@ -39,8 +40,44 @@ namespace ZeroBloat.Tweaks
         protected override RegistryValueKind ValueKind =>
             System.Enum.TryParse<RegistryValueKind>(_def.ValueKind, out var kind) ? kind : RegistryValueKind.DWord;
 
-        protected override object EnabledValue => _def.EnabledValue ?? 1;
-        protected override object DefaultValue => _def.DefaultValue ?? 0;
+        protected override object EnabledValue => ConvertJsonValue(_def.EnabledValue, ValueKind);
+        protected override object DefaultValue => ConvertJsonValue(_def.DefaultValue, ValueKind);
+
+        /// <summary>
+        /// System.Text.Json deserializes JSON scalars into an `object`
+        /// property as a boxed JsonElement, not a plain int/string/etc.
+        /// Passing a JsonElement straight to RegistryKey.SetValue() fails
+        /// with a type-mismatch exception, since the registry API expects
+        /// a native .NET type matching the declared RegistryValueKind.
+        /// This unwraps the JsonElement into the correct native type.
+        /// </summary>
+        private static object ConvertJsonValue(object? raw, RegistryValueKind kind)
+        {
+            if (raw is JsonElement element)
+            {
+                if (element.ValueKind == JsonValueKind.Null)
+                    return kind == RegistryValueKind.String || kind == RegistryValueKind.ExpandString
+                        ? string.Empty
+                        : 0;
+
+                return kind switch
+                {
+                    RegistryValueKind.DWord => element.GetInt32(),
+                    RegistryValueKind.QWord => element.GetInt64(),
+                    RegistryValueKind.String => element.GetString() ?? string.Empty,
+                    RegistryValueKind.ExpandString => element.GetString() ?? string.Empty,
+                    RegistryValueKind.MultiString => element.GetString() ?? string.Empty,
+                    _ => element.ToString()
+                };
+            }
+
+            // Already a native type (e.g. set directly in code rather than
+            // deserialized from JSON) — use as-is, falling back to a safe
+            // default if null.
+            return raw ?? (kind == RegistryValueKind.String || kind == RegistryValueKind.ExpandString
+                ? string.Empty
+                : 0);
+        }
 
         public override TweakCompatibility CheckCompatibility()
         {
