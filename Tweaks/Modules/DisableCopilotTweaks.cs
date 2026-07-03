@@ -55,5 +55,27 @@ namespace ZeroBloat.Tweaks.Modules
                 minBuildNumber: 22621
             )
         };
+
+        public override TweakResult Apply()
+        {
+            var result = base.Apply();
+            if (result.Success)
+            {
+                ShellRefreshHelper.RestartExplorer();
+                result.Message += " (Explorer restarted to apply the visible change.)";
+            }
+            return result;
+        }
+
+        public override TweakResult Revert()
+        {
+            var result = base.Revert();
+            if (result.Success)
+            {
+                ShellRefreshHelper.RestartExplorer();
+                result.Message += " (Explorer restarted.)";
+            }
+            return result;
+        }
     }
 }

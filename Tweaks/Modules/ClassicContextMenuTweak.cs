@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using ZeroBloat.Services;
 
 namespace ZeroBloat.Tweaks.Modules
 {
@@ -37,6 +38,17 @@ namespace ZeroBloat.Tweaks.Modules
         // marker; actual delete handled via override below.
         protected override object DefaultValue => "__DELETE_KEY__";
 
+        public override TweakResult Apply()
+        {
+            var result = base.Apply();
+            if (result.Success)
+            {
+                ShellRefreshHelper.RestartExplorer();
+                result.Message += " (Explorer restarted to apply the visible change.)";
+            }
+            return result;
+        }
+
         public override TweakResult Revert()
         {
             // This tweak's revert path is "delete the key" rather than
@@ -50,12 +62,13 @@ namespace ZeroBloat.Tweaks.Modules
                     throwOnMissingSubKey: false);
 
                 UndoLog.ClearPreState(Id);
+                ShellRefreshHelper.RestartExplorer();
 
                 return new TweakResult
                 {
                     Success = true,
                     TargetPath = $@"HKCU\{SubKeyPath}",
-                    Message = "Reverted Classic Context Menu — Windows 11 default menu restored.",
+                    Message = "Reverted Classic Context Menu — Windows 11 default menu restored. (Explorer restarted.)",
                     NewValue = "(key removed)"
                 };
             }
