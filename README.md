@@ -16,7 +16,8 @@ Fully open source — every registry key, every script, every strategy this app 
 
 
 # Features
-1)Anti-AI & Bloatware Removal
+1) 
+Anti-AI & Bloatware Removal
 Disable Copilot entirely (taskbar + background service)
 Disable Windows Recall / Click to Do
 Strip AI features from Paint, Photos, Notepad
@@ -27,7 +28,8 @@ Block Edge browser AI sidebar/assistants
 Permanently disable the Widgets process
 OEM bloatware purge — with a hardware-safety exception list that protects fan control, RGB, and power utilities on gaming laptops
 
-2) Deep Data Privacy
+2) 
+Deep Data Privacy
 Full telemetry disable
 Hosts-file network shield against tracking/ad domains
 Disable Activity History, Timeline, and Advertising ID
@@ -36,27 +38,31 @@ Purge existing diagnostic logs (.etl files)
 Disable location tracking, Wi-Fi Sense, Bluetooth beaconing
 Local account de-link (removes Microsoft account tie, build-aware fallback strategies)
 
-3) Performance (safe, no trade-offs)
+3) 
+Performance (safe, no trade-offs)
 SysMain/Superfetch control
 Targeted search indexing scope
 Startup item debloater
 Standby RAM purge
 Safe / Smart presets
 
-4) Gaming Tier (opt-in, isolated from everyday Performance)
+4) 
+Gaming Tier (opt-in, isolated from everyday Performance)
 Gated behind an explicit risk banner. These trade some OS-level protections for performance headroom — nothing here is applied silently.
 Ultimate Performance power plan
 Hardware-Accelerated GPU Scheduling (HAGS)
 Nagle's Algorithm disable (network latency)
 VBS / Core Isolation disable — requires a separate confirmation modal, logged distinctly every time it's used
 
-5) Deployment & Update Control
+5) 
+Deployment & Update Control
 Winget-based bulk app installer (150+ apps, Win32 source only — never Microsoft Store)
 Scoped driver update blacklist (security patches always pass through)
 Feature/quality update deferrals
 Configuration export/import
 
-6) Safety & Trust Framework
+6) 
+Safety & Trust Framework
 Dry-run diff preview before every change
 Batched restore point per session (avoids the 24-hour Windows throttle)
 Granular per-tweak undo, encrypted locally via DPAPI
@@ -66,7 +72,7 @@ Multi-trigger watchdog (Windows Update success, logon, weekly sweep) with a 6-ho
 Portable (zero-footprint) mode alongside the installed mode
 Zero-residue uninstaller
 
-# How the safety model works
+# How the safety model works & Why this matters
 Before you click Apply, you see the exact diff — not a description.
 When you click Apply, a session restore point is created once (not per-toggle, to respect Windows' 24-hour limit), and the pre-change value of every tweak is recorded locally, encrypted with DPAPI.
 After you click Apply, the app verifies the change actually took effect by reading the value back — it doesn't just assume success.
@@ -77,7 +83,7 @@ Nothing here is a black box. If you don't believe a claim in this README, the co
 Windows updates periodically change or re-enable the exact things this app disables. ZeroBloat doesn't pretend this won't happen — the watchdog exists specifically because it does. Tweak logic (registry paths, values, per-build compatibility) is decoupled from the app binary into a signed, checksum-verified manifest (tweaks.json), so fixes for Windows-side changes can ship fast without waiting on a full app release.
 Installation
 
-# Why this matters (and what it doesn't fix), Requirements
+# Requirements
 
 Minimum requirements: Windows 10 (22H2+) or Windows 11, any edition. Some tweaks are Pro/Enterprise-only and will show as unsupported on Home — always verified live via the capability badge, never assumed.
 Building from source
